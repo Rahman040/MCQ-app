@@ -22,11 +22,13 @@ def main():
         },
     ]
 
-    # Session state to track current question and score
+    # Session state to track current question, score, and answer status
     if 'current_question' not in st.session_state:
         st.session_state.current_question = 0
     if 'score' not in st.session_state:
         st.session_state.score = 0
+    if 'answered' not in st.session_state:
+        st.session_state.answered = False
 
     # Display current question
     current_question = st.session_state.current_question
@@ -36,13 +38,17 @@ def main():
         user_answer = st.radio("Select your answer:", options=q["options"], key=f"answer_{current_question}")
 
         if st.button("Submit Answer"):
-            if user_answer == q["correct"]:
-                st.success("Correct!")
-                st.session_state.score += 1
-            else:
-                st.error(f"Wrong! The correct answer is: {q['correct']}")
-
+            if not st.session_state.answered:
+                if user_answer == q["correct"]:
+                    st.success("Correct!")
+                    st.session_state.score += 1
+                else:
+                    st.error(f"Wrong! The correct answer is: {q['correct']}")
+                st.session_state.answered = True
+        
+        if st.session_state.answered and st.button("Next Question"):
             st.session_state.current_question += 1
+            st.session_state.answered = False
     else:
         st.success(f"Quiz completed! Your final score: {st.session_state.score}/{len(questions)}")
 
