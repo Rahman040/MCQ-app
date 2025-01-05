@@ -1,4 +1,4 @@
-import streamlit as st
+mport streamlit as st
 
 def main():
     st.title("MCQ Quiz App")
@@ -37,7 +37,9 @@ def main():
         st.subheader(f"Question {current_question + 1}: {q['question']}")
         user_answer = st.radio("Select your answer:", options=q["options"], key=f"answer_{current_question}")
 
-        if st.button("Submit / Next"):
+        button_label = "Submit" if not st.session_state.answered else "Next"
+
+        if st.button(button_label):
             if not st.session_state.answered:
                 if user_answer == q["correct"]:
                     st.success("Correct!")
