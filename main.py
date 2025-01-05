@@ -22,22 +22,29 @@ def main():
         },
     ]
 
-    # Quiz section
-    st.header("Quiz Section")
+    # Session state to track current question and score
+    if 'current_question' not in st.session_state:
+        st.session_state.current_question = 0
+    if 'score' not in st.session_state:
+        st.session_state.score = 0
 
-    if questions:
-        score = 0
-        for idx, q in enumerate(questions):
-            st.subheader(f"{idx + 1}. {q['question']}")
-            user_answer = st.radio("Select your answer:", options=q["options"], key=f"answer_{idx}")
+    # Display current question
+    current_question = st.session_state.current_question
+    if current_question < len(questions):
+        q = questions[current_question]
+        st.subheader(f"Question {current_question + 1}: {q['question']}")
+        user_answer = st.radio("Select your answer:", options=q["options"], key=f"answer_{current_question}")
 
-            if st.button(f"Submit Answer for Question {idx + 1}", key=f"submit_{idx}"):
-                if user_answer == q["correct"]:
-                    st.success("Correct!")
-                    score += 1
-                else:
-                    st.error(f"Wrong! The correct answer is: {q['correct']}")
-                st.write(f"Your current score: {score}/{idx + 1}")
+        if st.button("Submit Answer"):
+            if user_answer == q["correct"]:
+                st.success("Correct!")
+                st.session_state.score += 1
+            else:
+                st.error(f"Wrong! The correct answer is: {q['correct']}")
+
+            st.session_state.current_question += 1
+    else:
+        st.success(f"Quiz completed! Your final score: {st.session_state.score}/{len(questions)}")
 
 if __name__ == "__main__":
     main()
